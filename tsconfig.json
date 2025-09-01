@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "types": ["node", "@playwright/test"],
+    "baseUrl": "./",
+    "paths": {
+      "@pages/*": ["src/pages/*"],
+      "@utils/*": ["src/utils/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@data/*": ["src/data/*"],
+      "@config/*": ["config/*"],
+      "@fixtures/*": ["tests/fixtures/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "config/**/*",
+    "ai-agent/**/*",
+    "playwright.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "reports"
+  ],
+  "ts-node": {
+    "esm": false,
+    "experimentalSpecifierResolution": "node"
+  }
+}

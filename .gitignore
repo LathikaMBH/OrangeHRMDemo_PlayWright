@@ -11,8 +11,9 @@ screenshots/
 videos/
 
 # Environment variables
-.env.local
-.env.production
+.env
+.env.*
+*.env
 
 # IDE
 .vscode/
