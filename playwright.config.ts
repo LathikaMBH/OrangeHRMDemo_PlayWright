@@ -1,63 +1,55 @@
-import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import { PlaywrightTestConfig, devices } from '@playwright/test';
+import { EnvironmentManager } from './src/helpers/environment-manager';
 
-// Load environment variables
-dotenv.config();
+// Initialize environment
+const envManager = EnvironmentManager.getInstance();
+const environment = process.env.TEST_ENV || 'dev';
+envManager.loadEnvironment(environment);
 
-export default defineConfig({
-  // Test directory
+const config: PlaywrightTestConfig = {
+  // Test directory - using your original specs structure
   testDir: './tests/specs',
   
   // Global test timeout
-  timeout: 30 * 1000,
+  timeout: envManager.getTimeout() * 2,
   
   // Expect timeout
   expect: {
-    timeout: 10 * 1000,
-  },
-  
-  // Retry configuration
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  
-  // Reporting
-  reporter: [
-    ['html', { outputFolder: 'reports/html-report' }],
-    ['json', { outputFile: 'reports/test-results.json' }],
-    ['junit', { outputFile: 'reports/junit-results.xml' }],
-    ['list'],
-  ],
-  
-  // Global test configuration
-  use: {
-    // Base URL
-    baseURL: process.env.BASE_URL || 'https://opensource-demo.orangehrmlive.com',
-    
-    // Browser context options
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    
-    // Navigation timeout
-    navigationTimeout: 15 * 1000,
-    actionTimeout: 10 * 1000,
-    
-    // Viewport
-    viewport: { width: 1280, height: 720 },
-    
-    // Ignore HTTPS errors
-    ignoreHTTPSErrors: true,
+    timeout: envManager.getTimeout() / 3,
   },
 
-  // Browser configurations
+  // Test execution settings
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: envManager.getRetries(),
+  workers: envManager.getWorkers(),
+
+  // Base configuration
+  use: {
+    baseURL: envManager.getBaseUrl(),
+    headless: envManager.isHeadless(),
+    screenshot: 'only-on-failure',
+    video: process.env.VIDEO_ON_FAILURE === 'true' ? 'retain-on-failure' : 'off',
+    trace: process.env.TRACE_ON_FAILURE === 'true' ? 'retain-on-failure' : 'off',
+    actionTimeout: envManager.getTimeout(),
+  },
+
+  // Reporter configuration - using your original reports structure
+  reporter: [
+    ['html', { 
+      outputFolder: 'reports/html-report',
+      open: process.env.REPORT_OPEN === 'true' ? 'always' : 'never'
+    }],
+    ['json', { outputFile: 'reports/test-results.json' }],
+    ['junit', { outputFile: 'reports/junit-results.xml' }],
+    ['line'],
+  ],
+
+  // Projects for different browsers
   projects: [
     {
       name: 'chromium',
-      use: { 
-        ...devices['Desktop Chrome'],
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'firefox',
@@ -67,8 +59,19 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
+    // Mobile testing
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 12'] },
+    },
   ],
 
-  // Output directories
-  outputDir: 'screenshots/',
-});
+  // Global setup using your original support structure
+  globalSetup: './tests/support/global-setup.ts',
+};
+
+export default config;

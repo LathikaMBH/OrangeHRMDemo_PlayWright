@@ -19,6 +19,9 @@ videos/
 .vscode/
 .idea/
 
+#INSTALLATION FILES
+setup.sh
+
 # OS
 .DS_Store
 Thumbs.db
