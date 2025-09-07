@@ -16,9 +16,6 @@
     "test:prod": "TEST_ENV=prod npx playwright test",
     
     "test:chrome": "npx playwright test --project=chromium",
-    "test:firefox": "npx playwright test --project=firefox",
-    "test:safari": "npx playwright test --project=webkit",
-    "test:mobile": "npx playwright test --project=mobile-chrome --project=mobile-safari",
     
     "test:smoke": "npx playwright test --grep @smoke",
     "test:regression": "npx playwright test --grep @regression",
